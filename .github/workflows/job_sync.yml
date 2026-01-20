@@ -1,0 +1,20 @@
+name: Daily Job Sync
+on:
+  schedule:
+    - cron: '0 13 * * *' # Runs daily at 8 AM Austin time (13:00 UTC)
+  workflow_dispatch: # Allows you to run it manually for testing
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Job Scraper & Gemini Filter
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          # This triggers your internal API route or script
+          curl -X POST "https://${{ secrets.VERCEL_PROJECT_URL }}/api/sync-jobs" \
+          -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}"
