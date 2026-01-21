@@ -1,24 +1,30 @@
 import { NextResponse } from 'next/server';
+import { syncJobsAction } from '@/app/actions/sync-jobs';
 
-export const dynamic = 'force-dynamic'; // Ensures the API is not cached
+export const dynamic = 'force-dynamic'; 
 
 export async function POST(request: Request) {
   const authHeader = request.headers.get('Authorization');
 
-  // Verify the request comes from your authorized GitHub Action
+  // Verify the secret key from GitHub Actions
   if (authHeader !== `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   try {
-    // Add your job scraping or database sync logic here
-    console.log("Job sync triggered successfully");
+    console.log("Job sync triggered...");
+    
+    // CALL THE REAL ACTION HERE
+    const result = await syncJobsAction();
     
     return NextResponse.json({ 
-      message: 'Job sync started', 
+      message: 'Job sync completed', 
+      new_jobs: result.newJobsAdded,
       timestamp: new Date().toISOString() 
     }, { status: 200 });
-  } catch (err) {
+
+  } catch (err: any) {
+    console.error("Sync failed:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
