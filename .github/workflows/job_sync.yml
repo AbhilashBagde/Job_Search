@@ -9,12 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Run Job Scraper & Gemini Filter
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      - name: Trigger Job Sync API
         run: |
-          # This triggers your internal API route or script
-          curl -X POST "https://${{ secrets.VERCEL_PROJECT_URL }}/api/sync-jobs" \
+          curl -X POST "https://${{ secrets.VERCEL_URL }}/api/sync-jobs" \
           -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}"
